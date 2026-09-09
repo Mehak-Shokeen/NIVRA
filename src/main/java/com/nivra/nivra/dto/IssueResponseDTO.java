@@ -1,22 +1,33 @@
 package com.nivra.nivra.dto;
 
+import com.nivra.nivra.entity.IssueStatus;
+
 public class IssueResponseDTO {
 
     private Long id;
     private String title;
     private String description;
     private String category;
-    private String status;
+    private IssueStatus status;
     private String priority;
+    private Long assignedTo;
 
-    public IssueResponseDTO(Long id, String title, String description,
-                             String category, String status, String priority) {
+    public IssueResponseDTO(
+            Long id,
+            String title,
+            String description,
+            String category,
+            IssueStatus status,
+            String priority,
+            Long assignedTo) {
+
         this.id = id;
         this.title = title;
         this.description = description;
         this.category = category;
         this.status = status;
         this.priority = priority;
+        this.assignedTo = assignedTo;
     }
 
     public Long getId() {
@@ -35,11 +46,15 @@ public class IssueResponseDTO {
         return category;
     }
 
-    public String getStatus() {
+    public IssueStatus getStatus() {
         return status;
     }
 
     public String getPriority() {
         return priority;
+    }
+
+    public Long getAssignedTo() {
+        return assignedTo;
     }
 }

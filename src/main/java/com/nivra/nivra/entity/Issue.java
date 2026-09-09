@@ -1,10 +1,6 @@
 package com.nivra.nivra.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "issues")
@@ -15,17 +11,19 @@ public class Issue {
     private Long id;
 
     private String title;
-
     private String description;
-
     private String category;
 
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private IssueStatus status;
 
     private String priority;
 
-    public Issue() {
-    }
+    @ManyToOne
+    @JoinColumn(name = "assigned_to")
+    private User assignedTo;
+
+    public Issue() {}
 
     public Long getId() {
         return id;
@@ -55,11 +53,11 @@ public class Issue {
         this.category = category;
     }
 
-    public String getStatus() {
+    public IssueStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(IssueStatus status) {
         this.status = status;
     }
 
@@ -69,5 +67,13 @@ public class Issue {
 
     public void setPriority(String priority) {
         this.priority = priority;
+    }
+
+    public User getAssignedTo() {
+        return assignedTo;
+    }
+
+    public void setAssignedTo(User assignedTo) {
+        this.assignedTo = assignedTo;
     }
 }

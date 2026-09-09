@@ -1,5 +1,7 @@
 package com.nivra.nivra.dto;
 
+import com.nivra.nivra.entity.IssueStatus;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
@@ -15,7 +17,7 @@ public class IssueRequestDTO {
     @NotBlank(message = "Category is required")
     private String category;
 
-    private String status;
+    private IssueStatus status;
 
     private String priority;
 
@@ -43,11 +45,11 @@ public class IssueRequestDTO {
         this.category = category;
     }
 
-    public String getStatus() {
+    public IssueStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(IssueStatus status){
         this.status = status;
     }
 

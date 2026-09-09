@@ -2,17 +2,13 @@ package com.nivra.nivra.controller;
 
 import java.util.List;
 
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
 
+import com.nivra.nivra.dto.AssignIssueDTO;
 import com.nivra.nivra.dto.IssueRequestDTO;
 import com.nivra.nivra.dto.IssueResponseDTO;
+import com.nivra.nivra.dto.UpdateStatusDTO;
 import com.nivra.nivra.service.IssueService;
 
 import jakarta.validation.Valid;
@@ -33,12 +29,16 @@ public class IssueController {
     }
 
     @GetMapping("/{id}")
-    public IssueResponseDTO getIssueById(@PathVariable Long id) {
+    public IssueResponseDTO getIssueById(
+            @PathVariable Long id) {
+
         return issueService.getIssueById(id);
     }
 
     @PostMapping
-    public IssueResponseDTO createIssue(@Valid @RequestBody IssueRequestDTO request) {
+    public IssueResponseDTO createIssue(
+            @Valid @RequestBody IssueRequestDTO request) {
+
         return issueService.createIssue(request);
     }
 
@@ -48,6 +48,30 @@ public class IssueController {
             @Valid @RequestBody IssueRequestDTO request) {
 
         return issueService.updateIssue(id, request);
+    }
+
+    @PatchMapping("/{id}/status")
+    public IssueResponseDTO updateStatus(
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateStatusDTO request,
+            Authentication authentication) {
+
+        return issueService.updateStatus(
+                id,
+                request.getStatus(),
+                authentication.getName()
+        );
+    }
+
+    @PatchMapping("/{id}/assign")
+    public IssueResponseDTO assignIssue(
+            @PathVariable Long id,
+            @Valid @RequestBody AssignIssueDTO request) {
+
+        return issueService.assignIssue(
+                id,
+                request.getWorkerId()
+        );
     }
 
     @DeleteMapping("/{id}")
