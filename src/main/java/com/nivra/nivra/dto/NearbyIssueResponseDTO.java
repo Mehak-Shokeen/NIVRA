@@ -1,30 +1,29 @@
 package com.nivra.nivra.dto;
 
-import com.nivra.nivra.entity.IssueStatus;
-
-public class IssueResponseDTO {
+public class NearbyIssueResponseDTO {
 
     private Long id;
     private String title;
     private String description;
     private String category;
-    private IssueStatus status;
+    private String status;
     private String priority;
     private Long assignedTo;
-
     private Double latitude;
     private Double longitude;
+    private Double distanceMeters;
 
-    public IssueResponseDTO(
+    public NearbyIssueResponseDTO(
             Long id,
             String title,
             String description,
             String category,
-            IssueStatus status,
+            String status,
             String priority,
             Long assignedTo,
             Double latitude,
-            Double longitude) {
+            Double longitude,
+            Double distanceMeters) {
 
         this.id = id;
         this.title = title;
@@ -35,6 +34,7 @@ public class IssueResponseDTO {
         this.assignedTo = assignedTo;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.distanceMeters = distanceMeters;
     }
 
     public Long getId() {
@@ -53,7 +53,7 @@ public class IssueResponseDTO {
         return category;
     }
 
-    public IssueStatus getStatus() {
+    public String getStatus() {
         return status;
     }
 
@@ -71,5 +71,9 @@ public class IssueResponseDTO {
 
     public Double getLongitude() {
         return longitude;
+    }
+
+    public Double getDistanceMeters() {
+        return distanceMeters;
     }
 }

@@ -2,6 +2,8 @@ package com.nivra.nivra.entity;
 
 import jakarta.persistence.*;
 
+import org.locationtech.jts.geom.Point;
+
 @Entity
 @Table(name = "issues")
 public class Issue {
@@ -11,7 +13,9 @@ public class Issue {
     private Long id;
 
     private String title;
+
     private String description;
+
     private String category;
 
     @Enumerated(EnumType.STRING)
@@ -22,6 +26,10 @@ public class Issue {
     @ManyToOne
     @JoinColumn(name = "assigned_to")
     private User assignedTo;
+
+    // Geographic location of the issue
+    @Column(columnDefinition = "geometry(Point,4326)")
+    private Point location;
 
     public Issue() {}
 
@@ -75,5 +83,13 @@ public class Issue {
 
     public void setAssignedTo(User assignedTo) {
         this.assignedTo = assignedTo;
+    }
+
+    public Point getLocation() {
+        return location;
+    }
+
+    public void setLocation(Point location) {
+        this.location = location;
     }
 }
