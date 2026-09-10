@@ -7,11 +7,13 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.PrecisionModel;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import com.nivra.nivra.dto.CachedIssueResponseDTO;
 import com.nivra.nivra.dto.DuplicateIssueResponseDTO;
 import com.nivra.nivra.dto.IssueRequestDTO;
 import com.nivra.nivra.dto.IssueResponseDTO;
@@ -26,7 +28,6 @@ import com.nivra.nivra.repository.IssueRepository;
 import com.nivra.nivra.repository.IssueStatusHistoryRepository;
 import com.nivra.nivra.repository.NearbyIssueProjection;
 import com.nivra.nivra.repository.UserRepository;
-import com.nivra.nivra.specification.IssueSpecification;
 
 @Service
 public class IssueService {
@@ -35,6 +36,7 @@ public class IssueService {
     private final IssueStatusHistoryRepository issueStatusHistoryRepository;
     private final UserRepository userRepository;
     private final NotificationService notificationService;
+    private final IssueCacheService issueCacheService;
 
     private final GeometryFactory geometryFactory =
             new GeometryFactory(
@@ -46,18 +48,16 @@ public class IssueService {
             IssueRepository issueRepository,
             IssueStatusHistoryRepository issueStatusHistoryRepository,
             UserRepository userRepository,
-            NotificationService notificationService) {
+            NotificationService notificationService,
+            IssueCacheService issueCacheService) {
 
         this.issueRepository = issueRepository;
         this.issueStatusHistoryRepository =
                 issueStatusHistoryRepository;
         this.userRepository = userRepository;
         this.notificationService = notificationService;
+        this.issueCacheService = issueCacheService;
     }
-
-    // =========================
-    // GET / SEARCH / FILTER
-    // =========================
 
     public Page<IssueResponseDTO> getIssues(
             String search,
@@ -66,41 +66,21 @@ public class IssueService {
             String priority,
             Pageable pageable) {
 
-        Specification<Issue> specification =
-                (root, query, criteriaBuilder) -> null;
+        CachedIssueResponseDTO cached =
+                issueCacheService.getCachedIssues(
+                        search,
+                        status,
+                        category,
+                        priority,
+                        pageable
+                );
 
-        if (search != null && !search.isBlank()) {
-            specification = specification.and(
-                    IssueSpecification.containsText(search)
-            );
-        }
-
-        if (status != null) {
-            specification = specification.and(
-                    IssueSpecification.hasStatus(status)
-            );
-        }
-
-        if (category != null && !category.isBlank()) {
-            specification = specification.and(
-                    IssueSpecification.hasCategory(category)
-            );
-        }
-
-        if (priority != null && !priority.isBlank()) {
-            specification = specification.and(
-                    IssueSpecification.hasPriority(priority)
-            );
-        }
-
-        return issueRepository
-                .findAll(specification, pageable)
-                .map(this::convertToResponseDTO);
+        return new PageImpl<>(
+                cached.getContent(),
+                pageable,
+                cached.getTotalElements()
+        );
     }
-
-    // =========================
-    // NEARBY ISSUES
-    // =========================
 
     public List<NearbyIssueResponseDTO> getNearbyIssues(
             double latitude,
@@ -124,10 +104,6 @@ public class IssueService {
                 .map(this::convertToNearbyResponse)
                 .toList();
     }
-
-    // =========================
-    // DUPLICATE CHECK
-    // =========================
 
     public DuplicateIssueResponseDTO checkDuplicate(
             double latitude,
@@ -200,10 +176,6 @@ public class IssueService {
         }
     }
 
-    // =========================
-    // GET BY ID
-    // =========================
-
     public IssueResponseDTO getIssueById(Long id) {
 
         Issue issue =
@@ -211,15 +183,14 @@ public class IssueService {
                         .orElseThrow(() ->
                                 new ResourceNotFoundException(
                                         "Issue not found with id: "
-                                                + id));
+                                                + id
+                                )
+                        );
 
         return convertToResponseDTO(issue);
     }
 
-    // =========================
-    // CREATE
-    // =========================
-
+    @CacheEvict(value = "issues", allEntries = true)
     public IssueResponseDTO createIssue(
             IssueRequestDTO request) {
 
@@ -234,12 +205,13 @@ public class IssueService {
         if (request.getLatitude() != null
                 && request.getLongitude() != null) {
 
-            Point point = geometryFactory.createPoint(
-                    new Coordinate(
-                            request.getLongitude(),
-                            request.getLatitude()
-                    )
-            );
+            Point point =
+                    geometryFactory.createPoint(
+                            new Coordinate(
+                                    request.getLongitude(),
+                                    request.getLatitude()
+                            )
+                    );
 
             point.setSRID(4326);
 
@@ -252,10 +224,7 @@ public class IssueService {
         return convertToResponseDTO(savedIssue);
     }
 
-    // =========================
-    // UPDATE
-    // =========================
-
+    @CacheEvict(value = "issues", allEntries = true)
     public IssueResponseDTO updateIssue(
             Long id,
             IssueRequestDTO request) {
@@ -265,7 +234,9 @@ public class IssueService {
                         .orElseThrow(() ->
                                 new ResourceNotFoundException(
                                         "Issue not found with id: "
-                                                + id));
+                                                + id
+                                )
+                        );
 
         existingIssue.setTitle(request.getTitle());
         existingIssue.setDescription(request.getDescription());
@@ -275,12 +246,13 @@ public class IssueService {
         if (request.getLatitude() != null
                 && request.getLongitude() != null) {
 
-            Point point = geometryFactory.createPoint(
-                    new Coordinate(
-                            request.getLongitude(),
-                            request.getLatitude()
-                    )
-            );
+            Point point =
+                    geometryFactory.createPoint(
+                            new Coordinate(
+                                    request.getLongitude(),
+                                    request.getLatitude()
+                            )
+                    );
 
             point.setSRID(4326);
 
@@ -293,10 +265,7 @@ public class IssueService {
         return convertToResponseDTO(updatedIssue);
     }
 
-    // =========================
-    // STATUS UPDATE
-    // =========================
-
+    @CacheEvict(value = "issues", allEntries = true)
     public IssueResponseDTO updateStatus(
             Long id,
             IssueStatus newStatus,
@@ -307,7 +276,9 @@ public class IssueService {
                         .orElseThrow(() ->
                                 new ResourceNotFoundException(
                                         "Issue not found with id: "
-                                                + id));
+                                                + id
+                                )
+                        );
 
         IssueStatus oldStatus =
                 issue.getStatus();
@@ -320,7 +291,8 @@ public class IssueService {
                     "Invalid status transition: "
                             + oldStatus
                             + " -> "
-                            + newStatus);
+                            + newStatus
+            );
         }
 
         issue.setStatus(newStatus);
@@ -336,7 +308,8 @@ public class IssueService {
         history.setNewStatus(newStatus);
         history.setChangedBy(changedBy);
         history.setChangedAt(
-                LocalDateTime.now());
+                LocalDateTime.now()
+        );
 
         issueStatusHistoryRepository.save(history);
 
@@ -351,7 +324,8 @@ public class IssueService {
         }
 
         return convertToResponseDTO(
-                updatedIssue);
+                updatedIssue
+        );
     }
 
     private boolean isValidTransition(
@@ -377,10 +351,7 @@ public class IssueService {
         };
     }
 
-    // =========================
-    // ASSIGN ISSUE
-    // =========================
-
+    @CacheEvict(value = "issues", allEntries = true)
     public IssueResponseDTO assignIssue(
             Long issueId,
             Long workerId) {
@@ -390,20 +361,25 @@ public class IssueService {
                         .orElseThrow(() ->
                                 new ResourceNotFoundException(
                                         "Issue not found with id: "
-                                                + issueId));
+                                                + issueId
+                                )
+                        );
 
         User worker =
                 userRepository.findById(workerId)
                         .orElseThrow(() ->
                                 new ResourceNotFoundException(
                                         "Worker not found with id: "
-                                                + workerId));
+                                                + workerId
+                                )
+                        );
 
         if (!"WORKER".equals(
                 worker.getRole())) {
 
             throw new IllegalArgumentException(
-                    "User is not a worker");
+                    "User is not a worker"
+            );
         }
 
         issue.setAssignedTo(worker);
@@ -419,20 +395,15 @@ public class IssueService {
         );
 
         return convertToResponseDTO(
-                savedIssue);
+                savedIssue
+        );
     }
 
-    // =========================
-    // DELETE
-    // =========================
-
+    @CacheEvict(value = "issues", allEntries = true)
     public void deleteIssue(Long id) {
+
         issueRepository.deleteById(id);
     }
-
-    // =========================
-    // NORMAL RESPONSE
-    // =========================
 
     private IssueResponseDTO convertToResponseDTO(
             Issue issue) {
@@ -448,6 +419,7 @@ public class IssueService {
         Double longitude = null;
 
         if (issue.getLocation() != null) {
+
             latitude =
                     issue.getLocation().getY();
 
@@ -464,13 +436,10 @@ public class IssueService {
                 issue.getPriority(),
                 assignedWorkerId,
                 latitude,
-                longitude
+                longitude,
+                issue.getImageUrl()
         );
     }
-
-    // =========================
-    // NEARBY RESPONSE
-    // =========================
 
     private NearbyIssueResponseDTO convertToNearbyResponse(
             NearbyIssueProjection result) {

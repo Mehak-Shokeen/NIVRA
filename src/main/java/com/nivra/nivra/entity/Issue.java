@@ -1,8 +1,17 @@
 package com.nivra.nivra.entity;
 
-import jakarta.persistence.*;
-
 import org.locationtech.jts.geom.Point;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "issues")
@@ -23,15 +32,17 @@ public class Issue {
 
     private String priority;
 
+    private String imageUrl;
+
     @ManyToOne
     @JoinColumn(name = "assigned_to")
     private User assignedTo;
 
-    // Geographic location of the issue
     @Column(columnDefinition = "geometry(Point,4326)")
     private Point location;
 
-    public Issue() {}
+    public Issue() {
+    }
 
     public Long getId() {
         return id;
@@ -75,6 +86,14 @@ public class Issue {
 
     public void setPriority(String priority) {
         this.priority = priority;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
     public User getAssignedTo() {
