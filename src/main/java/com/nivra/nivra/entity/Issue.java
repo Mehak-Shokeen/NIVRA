@@ -35,6 +35,10 @@ public class Issue {
     private String imageUrl;
 
     @ManyToOne
+    @JoinColumn(name = "reported_by")
+    private User reportedBy;
+
+    @ManyToOne
     @JoinColumn(name = "assigned_to")
     private User assignedTo;
 
@@ -94,6 +98,14 @@ public class Issue {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public User getReportedBy() {
+        return reportedBy;
+    }
+
+    public void setReportedBy(User reportedBy) {
+        this.reportedBy = reportedBy;
     }
 
     public User getAssignedTo() {

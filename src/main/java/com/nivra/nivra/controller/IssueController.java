@@ -1,9 +1,11 @@
 package com.nivra.nivra.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,6 +25,7 @@ import com.nivra.nivra.dto.IssueResponseDTO;
 import com.nivra.nivra.dto.NearbyIssueResponseDTO;
 import com.nivra.nivra.dto.UpdateStatusDTO;
 import com.nivra.nivra.entity.IssueStatus;
+import com.nivra.nivra.repository.UserRepository;
 import com.nivra.nivra.service.IssueService;
 
 import jakarta.validation.Valid;
@@ -32,9 +35,14 @@ import jakarta.validation.Valid;
 public class IssueController {
 
     private final IssueService issueService;
+    private final UserRepository userRepository;
 
-    public IssueController(IssueService issueService) {
+    public IssueController(
+            IssueService issueService,
+            UserRepository userRepository) {
+
         this.issueService = issueService;
+        this.userRepository = userRepository;
     }
 
     // =========================
@@ -72,8 +80,54 @@ public class IssueController {
     }
 
     // =========================
+    // AUTHORITY WORKERS
+    // =========================
+
+    @GetMapping("/workers")
+    public List<Map<String, Object>> getWorkers(
+            Authentication authentication) {
+
+        boolean authorityOrAdmin =
+                authentication.getAuthorities().stream()
+                        .anyMatch(granted ->
+                                "ROLE_AUTHORITY".equals(granted.getAuthority())
+                                        || "ROLE_ADMIN".equals(granted.getAuthority()));
+
+        if (!authorityOrAdmin) {
+            throw new AccessDeniedException(
+                    "Only authorities and administrators can view workers"
+            );
+        }
+
+        return userRepository.findAll()
+                .stream()
+                .filter(user -> "WORKER".equals(user.getRole()))
+                .map(user -> Map.<String, Object>of(
+                        "id", user.getId(),
+                        "name", user.getName(),
+                        "email", user.getEmail(),
+                        "role", user.getRole()
+                ))
+                .toList();
+    }
+
+    // =========================
     // GET / SEARCH / FILTER
     // =========================
+
+    @GetMapping("/my")
+    public List<IssueResponseDTO> getMyIssues(
+            Authentication authentication) {
+
+        return issueService.getMyIssues(authentication.getName());
+    }
+
+    @GetMapping("/assigned")
+    public List<IssueResponseDTO> getAssignedIssues(
+            Authentication authentication) {
+
+        return issueService.getAssignedIssues(authentication.getName());
+    }
 
     @GetMapping
     public Page<IssueResponseDTO> getIssues(
@@ -99,12 +153,24 @@ public class IssueController {
         return issueService.getIssueById(id);
     }
 
+    // =========================
+    // CREATE
+    // =========================
+
     @PostMapping
     public IssueResponseDTO createIssue(
-            @Valid @RequestBody IssueRequestDTO request) {
+            @Valid @RequestBody IssueRequestDTO request,
+            Authentication authentication) {
 
-        return issueService.createIssue(request);
+        return issueService.createIssue(
+                request,
+                authentication.getName()
+        );
     }
+
+    // =========================
+    // UPDATE
+    // =========================
 
     @PutMapping("/{id}")
     public IssueResponseDTO updateIssue(
@@ -113,6 +179,10 @@ public class IssueController {
 
         return issueService.updateIssue(id, request);
     }
+
+    // =========================
+    // STATUS
+    // =========================
 
     @PatchMapping("/{id}/status")
     public IssueResponseDTO updateStatus(
@@ -127,6 +197,10 @@ public class IssueController {
         );
     }
 
+    // =========================
+    // ASSIGN
+    // =========================
+
     @PatchMapping("/{id}/assign")
     public IssueResponseDTO assignIssue(
             @PathVariable Long id,
@@ -137,6 +211,10 @@ public class IssueController {
                 request.getWorkerId()
         );
     }
+
+    // =========================
+    // DELETE
+    // =========================
 
     @DeleteMapping("/{id}")
     public void deleteIssue(

@@ -46,10 +46,7 @@ public class NotificationService {
     public List<NotificationResponseDTO> getUserNotifications(
             String email) {
 
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException(
-                                "User not found"));
+        User user = getUserByEmail(email);
 
         return notificationRepository
                 .findByUserIdOrderByCreatedAtDesc(user.getId())
@@ -65,5 +62,33 @@ public class NotificationService {
                                 notification.getCreatedAt()
                         ))
                 .toList();
+    }
+
+    public void markAsRead(Long notificationId, String email) {
+        User user = getUserByEmail(email);
+
+        Notification notification = notificationRepository
+                .findByIdAndUserId(notificationId, user.getId())
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Notification not found"));
+
+        notification.setRead(true);
+        notificationRepository.save(notification);
+    }
+
+    public void markAllAsRead(String email) {
+        User user = getUserByEmail(email);
+
+        List<Notification> notifications = notificationRepository
+                .findByUserIdOrderByCreatedAtDesc(user.getId());
+
+        notifications.forEach(notification -> notification.setRead(true));
+        notificationRepository.saveAll(notifications);
+    }
+
+    private User getUserByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "User not found"));
     }
 }

@@ -1,0 +1,71 @@
+.my-issues-page{min-height:calc(100vh - 80px);padding:34px 38px 48px;background:#f7faf8}
+.my-issues-header{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:28px}
+.back-to-dashboard{border:0;background:transparent;padding:0;margin-bottom:18px;color:#64746b;font-size:13px;font-weight:600;cursor:pointer}
+.back-to-dashboard:hover{color:#1e7b4d}
+.my-issues-eyebrow{color:#2c8b5c;font-size:11px;font-weight:800;letter-spacing:1.6px;margin-bottom:7px}
+.my-issues-header h1{margin:0;color:#17231d;font-size:32px;line-height:1.15;letter-spacing:-.7px}
+.my-issues-header p{margin:9px 0 0;max-width:650px;color:#728078;font-size:14px;line-height:1.6}
+.report-new-button{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 17px;border:0;border-radius:11px;background:#267b4e;color:white;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 8px 18px rgba(38,123,78,.16);transition:transform .18s ease,box-shadow .18s ease}
+.report-new-button:hover{transform:translateY(-1px);box-shadow:0 11px 22px rgba(38,123,78,.2)}
+.report-new-button span{font-size:19px;line-height:1}
+.my-issues-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px;margin-bottom:32px}
+.summary-card{display:flex;align-items:center;gap:13px;min-height:82px;padding:16px 18px;border:1px solid #e5ebe7;border-radius:14px;background:white;box-shadow:0 3px 14px rgba(31,58,43,.035)}
+.summary-icon{display:grid;width:42px;height:42px;place-items:center;border-radius:11px;background:#eef8f2;color:#277c50;font-size:19px}
+.summary-card span{display:block;color:#7a8780;font-size:12px;font-weight:600}
+.summary-card strong{display:block;margin-top:2px;color:#1d2b23;font-size:22px}
+.my-issues-toolbar{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:17px}
+.my-issues-toolbar h2{margin:0;color:#243128;font-size:18px}
+.my-issues-toolbar>div:first-child span{display:block;margin-top:4px;color:#8a958f;font-size:12px}
+.issue-filters{display:flex;padding:3px;border:1px solid #e1e8e3;border-radius:10px;background:white}
+.issue-filters button{border:0;border-radius:7px;background:transparent;padding:7px 13px;color:#77827c;font-size:12px;font-weight:700;cursor:pointer}
+.issue-filters button.active{background:#eaf6ee;color:#267b4e}
+.my-issues-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.my-issue-card{overflow:hidden;border:1px solid #e3e9e5;border-radius:15px;background:white;box-shadow:0 4px 18px rgba(31,58,43,.04);transition:transform .18s ease,box-shadow .18s ease}
+.my-issue-card:hover{transform:translateY(-2px);box-shadow:0 9px 26px rgba(31,58,43,.08)}
+.my-issue-image{position:relative;height:170px;overflow:hidden;background:#edf4ef}
+.my-issue-image img{width:100%;height:100%;object-fit:cover}
+.my-issue-image-placeholder{display:grid;width:100%;height:100%;place-items:center;background:linear-gradient(135deg,#eff7f1,#e3f1e8)}
+.my-issue-image-placeholder span{font-size:34px;opacity:.65}
+.issue-status-badge{display:inline-flex;align-items:center;gap:6px;width:fit-content;border-radius:999px;padding:6px 9px;font-size:10px;font-weight:800;letter-spacing:.15px}
+.my-issue-image .issue-status-badge{position:absolute;top:12px;left:12px;border:1px solid rgba(255,255,255,.65);background:rgba(255,255,255,.93);backdrop-filter:blur(6px)}
+.status-dot{width:6px;height:6px;border-radius:50%;background:currentColor}
+.status-new{color:#4773a2}.status-verified{color:#7a5bba}.status-assigned{color:#a56b27}.status-progress{color:#bb7022}.status-resolved{color:#277b50}
+.my-issue-card-body{padding:17px 18px 18px}
+.my-issue-card-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:9px}
+.issue-category{color:#6c7871;font-size:10px;font-weight:800;letter-spacing:.5px;text-transform:uppercase}
+.issue-priority{font-size:10px;font-weight:800}.priority-low{color:#4f8666}.priority-medium{color:#ad7a2c}.priority-high{color:#bd554f}
+.my-issue-card h3{overflow:hidden;margin:0;color:#202d25;font-size:17px;line-height:1.35;text-overflow:ellipsis;white-space:nowrap}
+.my-issue-description{display:-webkit-box;min-height:42px;margin:7px 0 13px;overflow:hidden;color:#758078;font-size:12px;line-height:1.55;-webkit-box-orient:vertical;-webkit-line-clamp:2}
+.my-issue-location{display:flex;align-items:center;gap:6px;margin-bottom:14px;color:#89938e;font-size:11px}
+.my-issue-location span:first-child{font-size:13px}
+.view-issue-button{display:flex;align-items:center;justify-content:space-between;width:100%;border:1px solid #e1e9e4;border-radius:9px;background:#fbfdfb;padding:9px 11px;color:#317b52;font-size:11px;font-weight:800;cursor:pointer}
+.view-issue-button:hover{background:#f0f8f3;border-color:#d2e5d9}
+.view-issue-button span{font-size:15px}
+.my-issues-loading,.my-issues-empty,.my-issues-error{display:flex;min-height:300px;flex-direction:column;align-items:center;justify-content:center;border:1px dashed #dce5df;border-radius:16px;background:white;text-align:center}
+.loading-spinner{width:30px;height:30px;margin-bottom:15px;border:3px solid #e2eee6;border-top-color:#2b8153;border-radius:50%;animation:nivra-spin .8s linear infinite}
+@keyframes nivra-spin{to{transform:rotate(360deg)}}
+.my-issues-loading h3,.my-issues-empty h3,.my-issues-error h3{margin:0;color:#26332b;font-size:16px}
+.my-issues-loading p,.my-issues-empty p,.my-issues-error p{max-width:470px;margin:7px 0 18px;color:#818d86;font-size:12px;line-height:1.6}
+.empty-illustration{display:grid;width:66px;height:66px;margin-bottom:16px;place-items:center;border-radius:50%;background:#edf8f1;font-size:28px}
+.error-icon{display:grid;width:42px;height:42px;margin-bottom:14px;place-items:center;border-radius:50%;background:#fff0ef;color:#b9544d;font-size:20px;font-weight:800}
+.my-issues-error button{border:0;border-radius:9px;background:#287b4f;padding:9px 15px;color:white;font-size:12px;font-weight:700;cursor:pointer}
+.issue-modal-backdrop{position:fixed;z-index:1000;inset:0;display:grid;place-items:center;padding:22px;background:rgba(18,30,23,.45);backdrop-filter:blur(3px)}
+.issue-modal{position:relative;width:min(620px,100%);max-height:calc(100vh - 44px);overflow:auto;border-radius:17px;background:white;box-shadow:0 24px 70px rgba(14,31,21,.24)}
+.issue-modal-close{position:absolute;z-index:2;top:12px;right:12px;display:grid;width:32px;height:32px;place-items:center;border:1px solid #dfe6e1;border-radius:50%;background:rgba(255,255,255,.94);color:#59645e;font-size:22px;line-height:1;cursor:pointer}
+.issue-modal-image{height:230px;overflow:hidden;background:#edf4ef}.issue-modal-image img{width:100%;height:100%;object-fit:cover}
+.issue-modal-content{padding:23px}.issue-modal-badges{display:flex;align-items:center;gap:9px;margin-bottom:9px}.issue-modal-badges .issue-status-badge{background:#f1f7f3}
+.issue-modal-content h2{margin:0;color:#202d25;font-size:23px;line-height:1.3}
+.issue-modal-description{margin:10px 0 20px;color:#69766e;font-size:13px;line-height:1.65}
+.issue-detail-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;overflow:hidden;border:1px solid #e6ece8;border-radius:11px;background:#e6ece8}
+.issue-detail-grid>div{min-height:63px;padding:11px 13px;background:white}.issue-detail-grid span,.issue-detail-grid strong{display:block}.issue-detail-grid span{color:#8a958e;font-size:10px;font-weight:700}.issue-detail-grid strong{margin-top:4px;color:#334139;font-size:12px}
+.issue-progress{margin-top:21px;padding:16px;border-radius:12px;background:#f7faf8}
+.issue-progress-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:20px}
+.issue-progress-heading>div span,.issue-progress-heading>div strong{display:block}.issue-progress-heading>div span{color:#87928b;font-size:10px;font-weight:700}.issue-progress-heading>div strong{margin-top:3px;color:#2d3b32;font-size:14px}
+.issue-progress-description{color:#7d8982;font-size:10px;text-align:right}
+.progress-track{display:flex;justify-content:space-between;gap:6px}.progress-step{position:relative;display:flex;min-width:0;flex:1;flex-direction:column;align-items:center;gap:6px;color:#a2aca6;font-size:9px;text-align:center}
+.progress-step:not(:last-child)::after{position:absolute;top:8px;left:calc(50% + 9px);width:calc(100% - 14px);height:2px;background:#dfe7e2;content:""}
+.progress-step.completed:not(:last-child)::after{background:#82b99a}.progress-dot{position:relative;z-index:1;display:grid;width:17px;height:17px;place-items:center;border:2px solid #dfe7e2;border-radius:50%;background:white;font-size:8px;font-weight:900}
+.progress-step.completed{color:#3e7d59}.progress-step.completed .progress-dot{border-color:#82b99a;background:#edf8f1}.progress-step.current .progress-dot{border-color:#2e8254;box-shadow:0 0 0 3px #dcefe3}
+.modal-done-button{width:100%;margin-top:18px;border:0;border-radius:10px;background:#287b4f;padding:11px;color:white;font-size:12px;font-weight:800;cursor:pointer}
+@media(max-width:900px){.my-issues-page{padding:26px 22px 40px}.my-issues-header{align-items:flex-start;flex-direction:column}.my-issues-summary,.my-issues-grid{grid-template-columns:1fr}}
+@media(max-width:620px){.my-issues-page{padding:22px 15px 30px}.my-issues-toolbar{align-items:flex-start;flex-direction:column}.issue-filters{width:100%}.issue-filters button{flex:1}.issue-modal-backdrop{padding:10px}.issue-modal{max-height:calc(100vh - 20px)}.issue-modal-content{padding:18px}.issue-progress-heading{align-items:flex-start;flex-direction:column}.issue-progress-description{text-align:left}.progress-step{font-size:8px}}

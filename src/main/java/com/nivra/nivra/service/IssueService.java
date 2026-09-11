@@ -59,6 +59,45 @@ public class IssueService {
         this.issueCacheService = issueCacheService;
     }
 
+    public List<IssueResponseDTO> getMyIssues(String email) {
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "User not found with email: " + email
+                        )
+                );
+
+        return issueRepository
+                .findByReportedByIdOrderByIdDesc(user.getId())
+                .stream()
+                .map(this::convertToResponseDTO)
+                .toList();
+    }
+
+    public List<IssueResponseDTO> getAssignedIssues(String email) {
+
+        User worker = userRepository.findByEmail(email)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "User not found with email: " + email
+                        )
+                );
+
+        if (!"WORKER".equals(worker.getRole())) {
+            throw new IllegalArgumentException(
+                    "Only workers can view assigned issues"
+            );
+        }
+
+        return issueRepository
+                .findByAssignedToIdOrderByIdDesc(worker.getId())
+                .stream()
+                .map(this::convertToResponseDTO)
+                .toList();
+    }
+
+
     public Page<IssueResponseDTO> getIssues(
             String search,
             IssueStatus status,
@@ -192,9 +231,18 @@ public class IssueService {
 
     @CacheEvict(value = "issues", allEntries = true)
     public IssueResponseDTO createIssue(
-            IssueRequestDTO request) {
+            IssueRequestDTO request,
+            String reporterEmail) {
+
+        User reporter = userRepository.findByEmail(reporterEmail)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "User not found with email: " + reporterEmail
+                        )
+                );
 
         Issue issue = new Issue();
+        issue.setReportedBy(reporter);
 
         issue.setTitle(request.getTitle());
         issue.setDescription(request.getDescription());
@@ -282,6 +330,22 @@ public class IssueService {
 
         IssueStatus oldStatus =
                 issue.getStatus();
+
+        User actor = userRepository.findByEmail(changedBy)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "User not found with email: " + changedBy
+                        )
+                );
+
+        if ("WORKER".equals(actor.getRole())) {
+            if (issue.getAssignedTo() == null
+                    || !issue.getAssignedTo().getId().equals(actor.getId())) {
+                throw new org.springframework.security.access.AccessDeniedException(
+                        "Workers can only update issues assigned to them"
+                );
+            }
+        }
 
         if (!isValidTransition(
                 oldStatus,
