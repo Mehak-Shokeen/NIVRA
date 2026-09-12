@@ -36,7 +36,9 @@ function NivraLogo() {
 
       <div>
         <div className="brand-name">Nivra</div>
-        <div className="brand-tagline">Stronger Communities</div>
+        <div className="brand-tagline">
+          Network for Issue Visibility, Response &amp; Awareness
+        </div>
       </div>
     </div>
   );
@@ -830,9 +832,11 @@ function CitizenDashboard() {
           </p>
         </div>
 
-        <button onClick={() => navigate("/report")}>
+        <button className="dashboard-report-button" 
+          onClick={() => navigate("/report")}>
+          <span>＋</span>
           Report Issue
-        </button>
+          </button>
 
       </div>
 
@@ -894,7 +898,7 @@ function Dashboard() {
         return <AuthorityDashboard />;
 
       case "ADMIN":
-        return <Navigate to="/admin" replace />;
+        return <AdminDashboard />;
 
       default:
         return (
@@ -1000,11 +1004,7 @@ function App() {
 
       <Route
         path="/admin"
-        element={
-          <ProtectedRoute>
-            <AdminDashboard />
-          </ProtectedRoute>
-        }
+        element={<Navigate to="/dashboard" replace />}
       />
 
       <Route
@@ -1031,6 +1031,10 @@ function App() {
 // ===============================
 
 export default App;
+
+
+
+
 
 
 

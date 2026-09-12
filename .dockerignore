@@ -1,0 +1,9 @@
+target
+.git
+.env
+frontend
+.vscode
+startup.log
+startup-error.txt
+upload-test.html
+HELP.md

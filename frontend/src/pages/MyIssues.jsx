@@ -276,7 +276,7 @@ export default function MyIssues() {
       {!loading && !error && filteredIssues.length === 0 && (
         <div className="my-issues-empty">
           <div className="empty-illustration">🌱</div>
-          <h3>{issues.length === 0 ? "You haven&apos;t reported anything yet" : "No issues match this filter"}</h3>
+          <h3>{issues.length === 0 ? "You haven't reported anything yet" : "No issues match this filter"}</h3>
           <p>
             {issues.length === 0
               ? "See something that needs attention? Put it on the Nivra map and help your community."
