@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Routes,
   Route,
@@ -7,6 +7,7 @@ import {
   useNavigate,
 } from "react-router-dom";
 
+import api from "./services/api";
 import { useAuth } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import IssueMap from "./components/IssueMap";
@@ -820,6 +821,31 @@ function DashboardMapPreview() {
 function CitizenDashboard() {
   const navigate = useNavigate();
 
+  const [issues, setIssues] = useState([]);
+
+  useEffect(() => {
+    const fetchMyIssues = async () => {
+      try {
+        const response = await api.get("/issues/my");
+        setIssues(Array.isArray(response.data) ? response.data : []);
+      } catch (error) {
+        console.error("Failed to load dashboard issue stats:", error);
+      }
+    };
+
+    fetchMyIssues();
+  }, []);
+
+  const myIssuesCount = issues.length;
+
+  const inProgressCount = issues.filter(
+    (issue) => issue.status === "IN_PROGRESS"
+  ).length;
+
+  const resolvedCount = issues.filter(
+    (issue) => issue.status === "RESOLVED"
+  ).length;
+
   return (
     <>
       <div className="welcome-section">
@@ -832,11 +858,13 @@ function CitizenDashboard() {
           </p>
         </div>
 
-        <button className="dashboard-report-button" 
-          onClick={() => navigate("/report")}>
+        <button
+          className="dashboard-report-button"
+          onClick={() => navigate("/report")}
+        >
           <span>＋</span>
           Report Issue
-          </button>
+        </button>
 
       </div>
 
@@ -845,25 +873,30 @@ function CitizenDashboard() {
 
         <div className="stat-card">
           <span className="stat-icon">📋</span>
+
           <div>
             <span>My Issues</span>
-            <strong>0</strong>
+            <strong>{myIssuesCount}</strong>
           </div>
         </div>
+
 
         <div className="stat-card">
           <span className="stat-icon">🔄</span>
+
           <div>
             <span>In Progress</span>
-            <strong>0</strong>
+            <strong>{inProgressCount}</strong>
           </div>
         </div>
 
+
         <div className="stat-card">
           <span className="stat-icon">✅</span>
+
           <div>
             <span>Resolved</span>
-            <strong>0</strong>
+            <strong>{resolvedCount}</strong>
           </div>
         </div>
 
@@ -875,8 +908,6 @@ function CitizenDashboard() {
     </>
   );
 }
-
-
 // ===============================
 // Dashboard
 // ===============================
